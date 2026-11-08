@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WENTEK STORE</title> <!-- NOMBRE A CAMBIAR -->
+<!-- AGREGAR ESTA LÍNEA CON EL ENLACE A TU ICONO -->
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Yuliavr/logos/a77e366a6d70e7f0d16d735bb1f1c7e7bbe4c283/icono.png">
+
+<style>
+/* ============================================================
+   1. VARIABLES Y TEMA
+   ============================================================ */
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#eef2f8; --card:#fff; --ink:#16213a; --mute:#5d6b86;
+  --navy:#12233d; --blue:#1c5fa8; --cy:#19e3f0; --line:#d5ddeb;
+  --bad:#c0392b;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b1220; --card:#14203a; --ink:#e8edf8; --mute:#93a1c0;
+    --blue:#3d8be0; --line:#273758; --bad:#ff7a6b;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1220; --card:#14203a; --ink:#e8edf8; --mute:#93a1c0;
+  --blue:#3d8be0; --line:#273758; --bad:#ff7a6b;
+}
+
+/* ============================================================
+   2. BASE
+   ============================================================ */
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.4 "Segoe UI",system-ui,Arial,sans-serif;
+}
+header{
+  background:#000;color:var(--cy);padding:12px;text-align:center;
+  font-size:26px;font-weight:800;letter-spacing:1px;
+}
+header small{display:block;color:#bcd;font-size:13px;font-weight:400;letter-spacing:3px}
+main{max-width:820px;margin:0 auto;padding:12px}
+
+/* ============================================================
+   3. NAVEGACIÓN
+   ============================================================ */
+nav{display:flex;gap:5px;margin-bottom:10px;overflow-x:auto}
+nav button{
+  flex:1;min-width:84px;padding:11px 6px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink);
+  border-radius:8px;font:inherit;font-weight:600;cursor:pointer;
+}
+nav button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* ============================================================
+   4. TARJETAS / FORMULARIOS / BOTONES
+   ============================================================ */
+.card{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:10px;padding:14px;margin-bottom:12px;
+}
+h2{margin:0 0 8px;font-size:17px}
+label{display:block;font-size:13px;color:var(--mute);margin:8px 0 3px}
+input,select{
+  width:100%;padding:10px;border:1px solid var(--line);
+  border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;
+}
+input[type=checkbox]{width:20px;height:20px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{
+  width:100%;margin-top:12px;padding:12px;border:0;border-radius:8px;
+  background:var(--blue);color:#fff;font:inherit;font-weight:700;cursor:pointer;
+}
+.btn.alt{background:transparent;color:var(--blue);border:1px solid var(--blue);margin-top:8px}
+:focus-visible{outline:3px solid var(--cy);outline-offset:2px}
+
+/* ============================================================
+   5. TOTALES Y TABLAS
+   ============================================================ */
+.tot{
+  display:flex;justify-content:space-between;padding:11px 12px;
+  border-bottom:1px solid var(--line);font-weight:600;
+}
+.tot small{display:block;font-weight:400;opacity:.75;font-size:12px}
+.tot.hl{background:var(--navy);color:#fff;border-radius:8px;margin:6px 0}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--mute)}
+.x{background:none;border:0;color:var(--bad);font-size:17px;cursor:pointer}
+.ed{background:none;border:0;color:var(--blue);font-size:17px;cursor:pointer}
+.empty{color:var(--mute);text-align:center;padding:14px}
+.hide{display:none!important}
+
+/* ============================================================
+   6. MODAL DE CONTRASEÑA (solo para Inventario)
+   ============================================================ */
+#lock{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+#lock.hide{display:none!important}
+.lockbox{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:24px 22px;max-width:340px;width:100%;text-align:center;
+  box-shadow:0 10px 40px rgba(0,0,0,.3);
+}
+.lockbox .logo{font-size:20px;font-weight:800;color:var(--blue);letter-spacing:1px}
+.lockbox .sub{font-size:12px;color:var(--mute);margin:4px 0 18px}
+.err{color:var(--bad);font-size:13px;margin-top:10px;min-height:18px}
+
+/* ============================================================
+   7. VISTA PREVIA DE FACTURA / IMPRESIÓN
+   ============================================================ */
+#fv{position:fixed;inset:0;background:var(--bg);overflow:auto;padding:12px;z-index:9}
+.paper{background:#fff;color:#000;max-width:640px;margin:0 auto;padding:22px;border-radius:6px}
+.paper th,.paper td{border-color:#ccc;color:#000}
+.paper h1{margin:0;color:#0a3d6b}
+@media print{
+  header,main,.noprint,#lock{display:none!important}
+  #fv{position:static;padding:0;background:#fff}
+}
+</style>
+</head>
+<body>
+
+<header>
+  WENTEK STORE <!-- NOMBRE A CAMBIAR -->
+  <small>BARRANQUILLA</small>
+</header>
+
+<main>
+  <!-- Pestañas · Inventario al final -->
+  <nav id="nav">
+    <button data-t="venta" class="on">Venta</button>
+    <button data-t="fac">Factura</button>
+    <button data-t="reg">Registro</button>
+    <button data-t="cie">Cierre</button>
+    <button data-t="inv">Inventario 🔒</button>
+    <button data-t="inversion">Inversión 🔒</button>
+  </nav>
+
+  <div class="card hide" id="st"></div>
+
+  <div class="card" id="bar">
+    <div class="row">
+      <div><label for="dia">Día</label><input id="dia" type="date"></div>
+      <div><label for="mes">Mes (opcional, anula el día)</label><input id="mes" type="month"></div>
+    </div>
+  </div>
+
+  <!-- VENTA -->
+  <section id="venta">
+    <div class="card">
+      <h2>Registrar venta</h2>
+      <label for="vc">Código</label>
+      <input id="vc" list="dl" autocomplete="off">
+      <datalist id="dl"></datalist>
+      <div class="row">
+        <div><label for="vq">Cantidad</label><input id="vq" type="number" min="1" value="1"></div>
+        <div><label for="vp">Precio unitario</label><input id="vp" type="number" min="0"></div>
+      </div>
+      <label for="vm">Método de pago</label>
+      <select id="vm">
+        <option>Efectivo</option>
+        <option>Datafono</option>
+        <option>Transferencia</option>
+        <option>Dañado</option>
+      </select>
+      <button class="btn" id="addV">Guardar venta</button>
+    </div>
+    <div class="card">
+      <h2>Ventas</h2>
+      <div class="wrap"><table id="tV"></table></div>
+    </div>
+    <div class="card">
+      <h2>Registrar gasto</h2>
+      <label for="gd">Descripción</label><input id="gd">
+      <label for="gv">Valor</label><input id="gv" type="number" min="0">
+      <button class="btn" id="addG">Guardar gasto</button>
+      <div class="wrap"><table id="tG"></table></div>
+    </div>
+  </section>
+
+  <!-- FACTURA -->
+  <section id="fac" class="hide">
+    <div class="card">
+      <h2>Datos de la factura</h2>
+      <div class="row">
+        <div><label for="fe">Empresa</label><input id="fe"></div>
+        <div><label for="fn">NIT empresa</label><input id="fn"></div>
+        <div><label for="fcl">Cliente</label><input id="fcl"></div>
+        <div><label for="fnc">NIT/CC</label><input id="fnc"></div>
+        <div><label for="fco">Correo</label><input id="fco" type="email"></div>
+        <div><label for="fnum">Factura número</label><input id="fnum" type="number" min="1"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Ventas sin facturar</h2>
+      <div class="wrap"><table id="tF"></table></div>
+      <button class="btn" id="genF">Generar factura</button>
+    </div>
+  </section>
+
+  <!-- REGISTRO -->
+  <section id="reg" class="hide">
+    <div class="card">
+      <h2>Registro de facturas</h2>
+      <label for="bus">Buscar por cliente, NIT o número</label>
+      <input id="bus">
+      <div class="wrap"><table id="tR"></table></div>
+    </div>
+  </section>
+
+  <!-- CIERRE -->
+  <section id="cie" class="hide">
+    <div class="card" id="tots"></div>
+    <div class="card">
+      <label for="base">Base de caja (efectivo inicial)</label>
+      <input id="base" type="number" min="0">
+    </div>
+    <div class="card">
+      <button class="btn alt" id="tema">Tema claro/oscuro</button>
+    </div>
+  </section>
+
+  <!-- INVENTARIO (al final, protegido) -->
+  <section id="inv" class="hide">
+    <div class="card">
+      <h2>Producto</h2>
+      <div style="font-size:13px;color:var(--mute)">
+        Al guardar, los vendidos se cuentan desde hoy. Para reponer stock,
+        edita el producto y escribe las existencias actuales.
+      </div>
+      <div class="row">
+        <div><label for="ic">Código</label><input id="ic"></div>
+        <div><label for="in">Nombre</label><input id="in"></div>
+        <div><label for="iq">Existencias (conteo actual)</label><input id="iq" type="number" min="0"></div>
+        <div><label for="im">Precio de compra (unidad)</label><input id="im" type="number" min="0"></div>
+        <div><label for="ip">Precio de venta</label><input id="ip" type="number" min="0"></div>
+        <div><label for="id">Cantidad dañados</label><input id="id" type="number" min="0"></div>
+      </div>
+      <button class="btn" id="addI">Guardar producto</button>
+    </div>
+    <div class="card">
+      <h2>Inventario</h2>
+      <div class="wrap"><table id="tI"></table></div>
+      <div id="tiT"></div>
+    </div>
+  </section>
+
+  <!-- INVERSIÓN (protegida) -->
+  <section id="inversion" class="hide">
+    <div class="card">
+      <h2>Resumen de inversión</h2>
+      <label for="imes">Mes</label>
+      <input id="imes" type="month">
+      <div id="invTot"></div>
+    </div>
+    <div class="card">
+      <h2>Mes por mes</h2>
+      <div class="wrap"><table id="tM"></table></div>
+    </div>
+  </section>
+</main>
+
+<div id="fv" class="hide"></div>
+
+<!-- Modal de contraseña (solo Inventario) -->
+<div id="lock" class="hide">
+  <div class="lockbox">
+    <div class="logo" id="lockTitle">Inventario protegido</div>
+    <div class="sub" id="lockSub">Escribe la contraseña para entrar</div>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="Contraseña">
+    <button class="btn" id="go">Entrar</button>
+    <button class="btn alt" id="cancel">Cancelar</button>
+    <div class="err" id="err"></div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   1. HELPERS BÁSICOS
+   ================================================================ */
+const $  = id => document.getElementById(id);
+const $$ = n  => "$" + Number(n || 0).toLocaleString("es-CO");
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt = f => f.split("-").reverse().join("/");
+const hoy = () => {
+  const d = new Date();
+  return new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+};
+
+/* ================================================================
+   2. ESTADO GLOBAL
+   ================================================================ */
+let S = {
+  ventas: [], gastos: [], facs: [], inv: [],
+  base: 50000, nf: 1,
+  emp: "WENTEK STORE",
+  nit: "1143438755"
+};
+let SOLD = {};
+let DAM  = {};            // unidades dañadas (registradas como venta "Dañado")
+let busy = 0;
+let tp   = null;
+let loadSeq = 0;           // evita que una respuesta vieja pise datos más nuevos
+let invUnlocked = false;   // 🔐 ¿Inventario ya desbloqueado en esta sesión?
+let claveOK   = "";        // contraseña ya verificada (se envía al servidor)
+let pendiente = "inv";     // pestaña protegida que se quiere abrir
+let RES       = [];        // resumen mensual que llega del servidor
+let claveEdit = "";        // contraseña de EDICIÓN ya verificada (solo en esta sesión)
+let modoLock  = "ver";     // "ver" = entrar · "edit" = modificar inventario
+let esperaEdit = null;     // promesa pendiente mientras se pide la clave de edición
+
+/* ================================================================
+   3. COMUNICACIÓN CON EL SERVIDOR
+   - Dentro de Apps Script usa google.script.run
+   - Fuera (Vercel, etc.) usa fetch("/api/rpc")
+   ================================================================ */
+const rpc = (fn, ...a) => {
+  if (window.google && google.script && google.script.run) {
+    return new Promise((ok, ko) =>
+      google.script.run
+        .withSuccessHandler(ok)
+        .withFailureHandler(ko)
+        [fn](...a));
+  }
+  return fetch("/api/rpc", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fn, args: a })
+  }).then(async r => {
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || "Error del servidor");
+    return j;
+  });
+};
+
+/* ================================================================
+   4. DESBLOQUEO DE INVENTARIO
+   ================================================================ */
+function abrirModalLock(modo) {
+  modoLock = modo === "edit" ? "edit" : "ver";
+  $("lockTitle").textContent = modoLock === "edit" ? "Modificar inventario" : "Inventario protegido";
+  $("lockSub").textContent   = modoLock === "edit"
+    ? "Escribe la contraseña de edición" : "Escribe la contraseña para entrar";
+  $("lock").classList.remove("hide");
+  $("pw").value = "";
+  $("err").textContent = "";
+  setTimeout(() => $("pw").focus(), 50);
+}
+
+function cerrarModalLock() {
+  $("lock").classList.add("hide");
+}
+
+/** Pide la contraseña de edición (una vez por sesión). Devuelve true si se verificó. */
+function pedirEdicion() {
+  if (claveEdit) return Promise.resolve(true);
+  return new Promise(res => { esperaEdit = res; abrirModalLock("edit"); });
+}
+
+async function verificarClave() {
+  const pw = $("pw").value.trim();
+  if (!pw) { $("err").textContent = "Escribe la contraseña."; return; }
+  $("err").textContent = "Verificando…";
+
+  if (modoLock === "edit") {
+    try {
+      if (await rpc("checkKey2", pw)) {
+        claveEdit = pw;
+        cerrarModalLock();
+        if (esperaEdit) { esperaEdit(true); esperaEdit = null; }
+      } else {
+        $("err").textContent = "Contraseña incorrecta.";
+        $("pw").value = "";
+        $("pw").focus();
+      }
+    } catch (e) {
+      $("err").textContent = "Error: " + ((e && e.message) || e);
+    }
+    return;
+  }
+
+  try {
+    const ok = await rpc("checkKey", pw);
+    if (ok) {
+      invUnlocked = true;
+      try { sessionStorage.setItem("inv_auth", pw); } catch (e) {}
+      cerrarModalLock();
+      claveOK = pw;
+      mostrarPestana(pendiente);
+    } else {
+      $("err").textContent = "Contraseña incorrecta.";
+      $("pw").value = "";
+      $("pw").focus();
+    }
+  } catch (e) {
+    $("err").textContent = "Error: " + ((e && e.message) || e);
+  }
+}
+
+/* ================================================================
+   5. NAVEGACIÓN ENTRE PESTAÑAS (con bloqueo de Inventario)
+   ================================================================ */
+const tabs = [...document.querySelectorAll("#nav button")];
+
+const protegidas = ["inv", "inversion"];
+
+function mostrarPestana(t) {
+  tabs.forEach(x => x.classList.toggle("on", x.dataset.t === t));
+  tabs.forEach(x => $(x.dataset.t).classList.toggle("hide", x.dataset.t !== t));
+  $("bar").classList.toggle("hide", protegidas.includes(t));
+  if (t === "inversion") cargarInversion();
+  render();
+}
+
+tabs.forEach(b => b.onclick = () => {
+  if (protegidas.includes(b.dataset.t) && !invUnlocked) {
+    pendiente = b.dataset.t;
+    abrirModalLock();
+    return;
+  }
+  mostrarPestana(b.dataset.t);
+});
+
+/* ================================================================
+   6. UTILIDADES DE FECHAS
+   ================================================================ */
+const rangoTxt = () => $("mes").value
+  ? "mes " + $("mes").value
+  : "día " + fmt($("dia").value || hoy());
+const fday = () => $("mes").value ? hoy() : ($("dia").value || hoy());
+const prod = c => S.inv.find(p => p.c.toLowerCase() === c.toLowerCase());
+const vend = c => SOLD[c] || 0;
+const dam  = c => DAM[c]  || 0;
+
+/* ================================================================
+   7. CARGA Y GUARDADO
+   ================================================================ */
+const msg = (t, show = true) => {
+  $("st").textContent = t;
+  $("st").classList.toggle("hide", !show);
+};
+
+async function load() {
+  const seq = ++loadSeq;
+  try {
+    const modo = $("mes").value ? "ms" : "f";
+    const val  = $("mes").value || $("dia").value || hoy();
+    const d = await rpc("getData", modo, val);
+
+    // Si mientras tanto hubo otra carga o un guardado en curso, esta respuesta
+    // puede estar vieja: no se aplica (evita que "desaparezcan" cambios recientes).
+    if (seq !== loadSeq || busy) return;
+
+    S.ventas = d.ventas;
+    S.gastos = d.gastos;
+    S.facs   = d.facs;
+    S.inv    = d.inv;
+    SOLD     = d.sold;
+    DAM      = d.dam || {};
+
+    if (!tp && d.cfg) Object.assign(S, d.cfg);
+
+    render();
+    if (!$("inversion").classList.contains("hide")) cargarInversion();
+    msg("", false);
+  } catch (e) {
+    msg("No se pudo cargar: " + ((e && e.message) || e));
+  }
+}
+
+/** Guardado normal (espera al servidor). Se usa para facturas e inventario. */
+async function act(fn, ...a) {
+  busy++;
+  msg("Guardando…");
+  try {
+    const r = await rpc(fn, ...a);
+    busy--;
+    await load();
+    return r;
+  } catch (e) {
+    busy--;
+    if (/edición incorrecta/i.test(String((e && e.message) || e))) claveEdit = "";
+    msg("No se pudo guardar: " + ((e && e.message) || e));
+  }
+}
+
+/**
+ * Guardado OPTIMISTA: cambia la pantalla al instante y manda el guardado
+ * al servidor en segundo plano. Solo recarga si algo falla (o si hace falta
+ * refrescar los "vendidos" del inventario).
+ */
+function bg(local, fn, args, refrescar) {
+  busy++;
+  local();
+  render();
+  rpc(fn, ...args)
+    .then(() => { busy--; if (refrescar) load(); })
+    .catch(e => {
+      busy--;
+      msg("No se pudo guardar: " + ((e && e.message) || e) + " — recargando…");
+      load();
+    });
+}
+
+// Refresco automático cada 90 s (antes 30 s) y solo si la pestaña está visible
+setInterval(() => {
+  if (!busy && !document.hidden && !tp) load();
+}, 90000);
+
+// Al volver a la pestaña después de un rato, refresca una vez
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && !busy && !tp) load();
+});
+
+function cfg() {
+  clearTimeout(tp);
+  tp = setTimeout(async () => {
+    try {
+      await rpc("saveCfg", { base: S.base, nf: S.nf, emp: S.emp, nit: S.nit });
+    } catch (e) { msg("No se pudo guardar: " + e.message); }
+    tp = null;
+  }, 700);
+}
+
+/* ================================================================
+   8. TABLAS
+   ================================================================ */
+function tabla(el, cols, rows, vacio) {
+  el.innerHTML = rows.length
+    ? "<tr>" + cols.map(c => "<th>" + c + "</th>").join("") + "</tr>"
+      + rows.map(r => "<tr>" + r.map(c => "<td>" + c + "</td>").join("") + "</tr>").join("")
+    : '<tr><td class="empty">' + vacio + "</td></tr>";
+}
+const X = js => '<button class="x" aria-label="Eliminar" onclick="' + js + '">✕</button>';
+
+/* ================================================================
+   9. ACCIONES GLOBALES
+   ================================================================ */
+window.delV = (id, f) => {
+  if (!confirm("¿Eliminar este registro?")) return;
+  bg(() => { S.ventas = S.ventas.filter(v => v.id !== id); }, "delVenta", [f, id], true);
+};
+window.delG = id => {
+  if (!confirm("¿Eliminar este registro?")) return;
+  bg(() => { S.gastos = S.gastos.filter(g => g.id !== id); }, "delGasto", [id], false);
+};
+window.delF = n => { if (confirm("¿Eliminar esta factura?")) act("delFactura", n); };
+window.rev  = (id, f) => {
+  bg(() => {
+    const v = S.ventas.find(x => x.id === id);
+    if (v) v.r = !v.r;
+  }, "setRev", [f, id], false);
+};
+
+window.edI = async c => {
+  if (!(await pedirEdicion())) return;
+  const p = prod(c);
+  [["ic","c"],["in","n"],["iq","q"],["im","pm"],["ip","pv"],["id","d"]]
+    .forEach(([a, b]) => $(a).value = p[b]);
+  $("ic").focus();
+};
+window.delI = async c => {
+  if (!confirm("¿Eliminar el producto?")) return;
+  if (!(await pedirEdicion())) return;
+  act("delProd", c, claveEdit);
+};
+window.verF = n => {
+  const f = S.facs.find(x => x.n === n);
+  if (f) showF(f);
+};
+
+/* ================================================================
+   10. VENTAS
+   ================================================================ */
+$("vc").oninput = () => {
+  const p = prod($("vc").value.trim());
+  if (p && $("vm").value !== "Dañado") $("vp").value = p.pv;
+};
+
+$("addV").onclick = () => {
+  const c = $("vc").value.trim();
+  const q = +$("vq").value;
+  const dn = $("vm").value === "Dañado";
+  const p = dn ? 0 : +$("vp").value;
+  if (!c || !(q > 0) || (!dn && $("vp").value === "")) {
+    alert("Completa código, cantidad y precio."); return;
+  }
+  const pr = prod(c);
+  if (dn && !pr) { alert("Para registrar un dañado, el producto debe estar en el inventario."); return; }
+  const qd = pr ? pr.q - vend(pr.c) - dam(pr.c) - (pr.d || 0) : 0;
+  if (pr && qd < q && !confirm("Solo quedan " + qd + " en inventario. ¿Registrar igual?")) return;
+
+  const v = {
+    id: uid(), f: fday(), c: pr ? pr.c : c, q, p,
+    t: q * p, m: $("vm").value
+  };
+  // Se ve al instante; el servidor guarda en segundo plano
+  bg(() => {
+    S.ventas.push(v);
+    if (pr) {
+      if (dn) DAM[pr.c] = dam(pr.c) + q;
+      else    SOLD[pr.c] = vend(pr.c) + q;
+    }
+  }, "addVenta", [v], false);
+
+  $("vc").value = ""; $("vq").value = 1; $("vp").value = "";
+  if (dn) { $("vm").value = "Efectivo"; $("vp").disabled = false; }
+};
+
+// Al elegir "Dañado" el precio no aplica (no es una venta)
+$("vm").onchange = () => {
+  const dn = $("vm").value === "Dañado";
+  $("vp").disabled = dn;
+  if (dn) $("vp").value = "";
+};
+
+/* ================================================================
+   11. GASTOS
+   ================================================================ */
+$("addG").onclick = () => {
+  const d = $("gd").value.trim();
+  const v = +$("gv").value;
+  if (!d || !(v > 0)) { alert("Completa descripción y valor."); return; }
+  const g = { id: uid(), f: fday(), d, v };
+  bg(() => { S.gastos.push(g); }, "addGasto", [g], false);
+  $("gd").value = ""; $("gv").value = "";
+};
+
+/* ================================================================
+   12. INVENTARIO
+   ================================================================ */
+$("addI").onclick = async () => {
+  const c = $("ic").value.trim();
+  if (!c || !$("in").value.trim()) { alert("Completa código y nombre."); return; }
+  if (!(await pedirEdicion())) return;
+  act("saveProd", {
+    c,
+    n: $("in").value.trim(),
+    q: +$("iq").value || 0,
+    pm: +$("im").value || 0,
+    pv: +$("ip").value || 0,
+    d:  +$("id").value || 0,
+    corte: hoy()
+  }, claveEdit);
+  ["ic","in","iq","im","ip","id"].forEach(x => $(x).value = "");
+};
+
+/* ================================================================
+   13. CONFIGURACIÓN
+   ================================================================ */
+$("base").oninput = e => { S.base = +e.target.value || 0; cfg(); render(); };
+["fe","fn"].forEach(i => $(i).oninput = () => { S.emp = $("fe").value; S.nit = $("fn").value; cfg(); });
+$("fnum").oninput = () => { S.nf = +$("fnum").value || 1; cfg(); };
+
+/* ================================================================
+   14. FACTURA
+   ================================================================ */
+$("genF").onclick = async () => {
+  const ids = new Set([...document.querySelectorAll(".fk:checked")].map(x => x.value));
+  if (!ids.size) { alert("Marca al menos una venta."); return; }
+  if (!$("fcl").value.trim()) { alert("Escribe el nombre del cliente."); return; }
+
+  if (tp) {
+    clearTimeout(tp); tp = null;
+    await rpc("saveCfg", { base: S.base, nf: S.nf, emp: S.emp, nit: S.nit });
+  }
+
+  const vs = S.ventas.filter(v => ids.has(v.id));
+  msg("Generando factura y PDF…");
+
+  const r = await act("genFactura", {
+    cli:  $("fcl").value.trim(),
+    nit:  $("fnc").value.trim(),
+    mail: $("fco").value.trim(),
+    ids:  vs.map(v => ({ id: v.id, f: v.f })),
+    items: vs.map(v => ({
+      c: v.c, d: (prod(v.c) || {}).n || v.c,
+      q: v.q, p: v.p, t: v.t
+    })),
+    total: vs.reduce((a, v) => a + v.t, 0)
+  });
+
+  if (r) {
+    ["fcl","fnc","fco"].forEach(x => $(x).value = "");
+    showF(r);
+  }
+};
+
+function showF(f) {
+  $("fv").innerHTML =
+    '<div class="paper">' +
+      '<h1>' + esc(f.emp) + '</h1>' +
+      '<div>NIT ' + esc(f.enit) + ' · Barranquilla</div>' +
+      '<h3>Factura N° ' + f.n + '</h3>' +
+      '<div>Fecha: ' + fmt(f.f) +
+        '<br>Cliente: ' + esc(f.cli) +
+        '<br>NIT/CC: ' + esc(f.nit) +
+        '<br>Correo: ' + esc(f.mail) + '</div><br>' +
+      '<table>' +
+        '<tr><th>Código</th><th>Descripción</th><th>Cant.</th>' +
+        '<th>Precio</th><th>Total</th></tr>' +
+        f.items.map(i =>
+          "<tr><td>" + esc(i.c) + "</td><td>" + esc(i.d) + "</td>" +
+          "<td>" + i.q + "</td><td>" + $$(i.p) + "</td><td>" + $$(i.t) + "</td></tr>"
+        ).join("") +
+      '</table>' +
+      '<h3 style="text-align:right">Total: ' + $$(f.total) + '</h3>' +
+    '</div>' +
+    '<div class="noprint" style="max-width:640px;margin:0 auto">' +
+      (f.pdf
+        ? '<a class="btn" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="' + esc(f.pdf) + '">Abrir PDF guardado en Drive</a>'
+        : "") +
+      '<button class="btn alt" onclick="window.print()">Imprimir</button>' +
+      '<button class="btn alt" onclick="$(\'fv\').classList.add(\'hide\')">Cerrar</button>' +
+    '</div>';
+  $("fv").classList.remove("hide");
+}
+
+/* ================================================================
+   15. BUSCADOR + TEMA
+   ================================================================ */
+$("bus").oninput = render;
+
+$("tema").onclick = () => {
+  const r = document.documentElement;
+  const modoOscuro = r.dataset.theme
+    ? r.dataset.theme === "dark"
+    : matchMedia("(prefers-color-scheme:dark)").matches;
+  r.dataset.theme = modoOscuro ? "light" : "dark";
+};
+
+/* ================================================================
+   16. RENDERIZADO GLOBAL
+   ================================================================ */
+function setv(id, v) {
+  const e = $(id);
+  if (document.activeElement !== e) e.value = v;
+}
+
+function render() {
+  const V = S.ventas;
+  const G = S.gastos;
+
+  $("dl").innerHTML = S.inv
+    .map(p => '<option value="' + esc(p.c) + '">' + esc(p.n) + "</option>")
+    .join("");
+
+  tabla($("tV"), ["Fecha","Código","Cant.","Total","Pago","Rev.",""],
+    V.map(v => [
+      fmt(v.f), esc(v.c), v.q, $$(v.t), v.m,
+      '<input type="checkbox" aria-label="Revisado" ' + (v.r ? "checked" : "") +
+        ' onchange="rev(\'' + v.id + "','" + v.f + '\')">',
+      X("delV('" + v.id + "','" + v.f + "')")
+    ]),
+    "Sin ventas en este periodo");
+
+  tabla($("tG"), ["Fecha","Descripción","Valor",""],
+    G.map(g => [fmt(g.f), esc(g.d), $$(g.v), X("delG('" + g.id + "')")]),
+    "Sin gastos en este periodo");
+
+  let tc = 0, tv = 0, tg = 0;
+  tabla($("tI"),
+    ["Código","Producto","Existencias","Vend.","Dañ.","Quedan","P. venta","Ganancia","",""],
+    S.inv.map(p => {
+      const v = vend(p.c);
+      const g = v * (p.pv - p.pm);
+      tc += p.q * p.pm; tv += v * p.pv; tg += g;
+      return [
+        esc(p.c), esc(p.n), p.q, v, (p.d || 0) + dam(p.c),
+        "<b>" + (p.q - v - (p.d || 0) - dam(p.c)) + "</b>",
+        $$(p.pv), $$(g),
+        '<button class="ed" aria-label="Editar" onclick="edI(\'' + esc(p.c) + '\')">✎</button>',
+        '<button class="x" aria-label="Eliminar" onclick="delI(\'' + esc(p.c) + '\')">✕</button>'
+      ];
+    }),
+    "Aún no hay productos");
+
+  $("tiT").innerHTML =
+    '<div class="tot"><span>Total compra</span><span>' + $$(tc) + "</span></div>" +
+    '<div class="tot"><span>Total vendido</span><span>' + $$(tv) + "</span></div>" +
+    '<div class="tot"><span>Total de ganancia</span><span>' + $$(tg) + "</span></div>";
+
+  setv("fnum", S.nf);
+  setv("base", S.base);
+  setv("fe",   S.emp);
+  setv("fn",   S.nit);
+
+  const SF = V.filter(v => !v.fa && v.m !== "Dañado");
+  tabla($("tF"), ["","Fecha","Código","Cant.","Total"],
+    SF.map(v => [
+      '<input class="fk" type="checkbox" value="' + v.id + '" checked aria-label="Incluir">',
+      fmt(v.f), esc(v.c), v.q, $$(v.t)
+    ]),
+    "No hay ventas sin facturar en este periodo");
+
+  const q = $("bus").value.toLowerCase();
+  tabla($("tR"), ["No.","Fecha","Cliente","NIT/CC","Correo","Total","PDF","X"],
+    [...S.facs].reverse()
+      .filter(f => !q || (f.cli + f.nit + f.n).toLowerCase().includes(q))
+      .map(f => [
+        f.n, fmt(f.f), esc(f.cli), esc(f.nit), esc(f.mail), $$(f.total),
+        '<button class="ed" onclick="verF(' + f.n + ')">Ver</button>',
+        '<button class="x" aria-label="Eliminar" onclick="delF(' + f.n + ')">✕</button>'
+      ]),
+    "Aún no hay facturas en este periodo");
+
+  const suma = m => V.filter(v => v.m === m).reduce((a, v) => a + v.t, 0);
+  const dat = suma("Datafono");
+  const ef  = suma("Efectivo");
+  const tr  = suma("Transferencia");
+  const ga  = G.reduce((a, g) => a + g.v, 0);
+
+  $("tots").innerHTML =
+    "<h2>Totales del " + rangoTxt() + "</h2>" +
+    '<div class="tot"><span>Efectivo</span><span>' + $$(ef)  + "</span></div>" +
+    '<div class="tot"><span>Datafono</span><span>' + $$(dat) + "</span></div>" +
+    '<div class="tot"><span>Transferencia</span><span>' + $$(tr) + "</span></div>" +
+    '<div class="tot"><span>Total ventas<small>Efectivo + Datafono + Transferencia</small></span>' +
+      "<span>" + $$(dat + tr + ef) + "</span></div>" +
+    '<div class="tot"><span>Gastos</span><span>' + $$(ga) + "</span></div>" +
+    '<div class="tot hl"><span>Efectivo en caja' +
+      "<small>Base " + $$(S.base) + " + ventas en efectivo " + $$(ef) + " − gastos</small></span>" +
+      "<span>" + $$(S.base + ef - ga) + "</span></div>";
+
+  renderInversion();
+}
+
+/* ================================================================
+   16B. INVERSIÓN
+   ================================================================ */
+const SOCIOS = ["Wilson", "Yulia"];   // nombres de los socios (la ganancia se divide 50/50)
+
+async function cargarInversion() {
+  if (!claveOK) return;
+  try {
+    RES = await rpc("resumenInversion", claveOK);
+    renderInversion();
+  } catch (e) {
+    msg("No se pudo cargar Inversión: " + ((e && e.message) || e));
+  }
+}
+
+function renderInversion() {
+  const ym = $("imes").value || hoy().slice(0, 7);
+  const m  = RES.find(x => x.ym === ym) || { venta: 0, ganancia: 0, sinCosto: 0, perdida: 0 };
+
+  let inversion = 0, ingreso = 0, llevas = 0;
+  S.inv.forEach(p => {
+    inversion += p.q * p.pm;
+    ingreso   += Math.max(p.q - (p.d || 0), 0) * p.pv;
+    llevas    += vend(p.c) * (p.pv - p.pm) - dam(p.c) * p.pm;
+  });
+
+  const mitad = g => { const a = Math.round(g / 2); return [a, g - a]; };
+  const perd = m.perdida || 0;          // costo de la mercancía dañada
+  const neta = m.ganancia - perd;        // ganancia después de pérdidas
+  const [gA, gB] = mitad(neta);
+  const pieMitad = "50% de " + $$(neta);
+
+  const fila = (titulo, valor, pie) =>
+    '<div class="tot"><span>' + titulo + (pie ? "<small>" + pie + "</small>" : "") +
+    "</span><span>" + $$(valor) + "</span></div>";
+
+  $("invTot").innerHTML =
+    fila("Inversión", inversion, "Existencias × precio de compra") +
+    fila("Venta total del mes", m.venta, "Todas las ventas de " + ym) +
+    fila("Pérdida por dañados", perd, "Costo de la mercancía dañada en " + ym) +
+    fila("Ganancia " + SOCIOS[0], gA, pieMitad + " · venta − costo − pérdida por dañados") +
+    fila("Ganancia " + SOCIOS[1], gB, pieMitad +
+         (m.sinCosto ? " · No incluye " + $$(m.sinCosto) + " de productos que no están en el inventario" : "")) +
+    fila("Ganancia que llevas", llevas, "Lo vendido desde el último conteo, menos dañados") +
+    '<div class="tot hl"><span>Ganancia total al vender todo' +
+    "<small>Según las existencias del último conteo, descontando dañados</small></span><span>" +
+    $$(ingreso - inversion) + "</span></div>";
+
+  tabla($("tM"), ["Mes", "Venta", "Ganancia", "Pérdida", SOCIOS[0], SOCIOS[1]],
+    RES.map(x => { const [a, b] = mitad(x.ganancia - (x.perdida || 0)); return [x.ym, $$(x.venta), $$(x.ganancia), $$(x.perdida || 0), $$(a), $$(b)]; }),
+    "Aún no hay ventas");
+}
+
+/* ================================================================
+   17. INICIALIZACIÓN
+   ================================================================ */
+$("dia").value = hoy();
+$("imes").value = hoy().slice(0, 7);
+$("imes").oninput = renderInversion;
+$("go").onclick = verificarClave;
+$("cancel").onclick = () => {
+  cerrarModalLock();
+  if (esperaEdit) { esperaEdit(false); esperaEdit = null; }
+};
+$("pw").onkeydown = e => { if (e.key === "Enter") verificarClave(); };
+
+// ✅ Al cambiar el día o el mes, se recargan los datos de inmediato
+$("dia").onchange = load;
+$("mes").onchange = load;
+
+render();
+msg("Cargando datos de tu Drive…");
+load();
+
+// Si ya se desbloqueó Inventario antes en esta pestaña, recordarlo
+try {
+  const guardada = sessionStorage.getItem("inv_auth");
+  if (guardada) {
+    rpc("checkKey", guardada).then(ok => { if (ok) { invUnlocked = true; claveOK = guardada; } }).catch(() => {});
+  }
+} catch (e) {}
+</script>
+</body>
+</html>
