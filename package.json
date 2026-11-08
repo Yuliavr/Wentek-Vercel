@@ -1,7 +1,7 @@
 {
-  "name": "wentek-store",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Wentek Store - ventas, inventario y facturas sobre Google Sheets",
-  "engines": { "node": "20.x" }
-}
+     "name": "wentek-store",
+     "version": "1.0.0",
+     "private": true,
+     "description": "Wentek Store - ventas, inventario y facturas sobre Google Sheets",
+     "engines": { "node": "26.x" }
+   }
